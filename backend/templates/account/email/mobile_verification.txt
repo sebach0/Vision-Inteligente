@@ -1,0 +1,24 @@
+{% load i18n %}
+{% autoescape off %}
+{% blocktrans with site_name=site_name %}
+
+¡Bienvenido a {{ site_name }}!
+
+Tu código de verificación es:
+
+{{ verification_code }}
+
+Ingresa este código en la aplicación móvil para verificar tu cuenta.
+
+El código expira en 15 minutos.
+
+Si no creaste esta cuenta, puedes ignorar este mensaje.
+
+¡Gracias por unirte a nosotros!
+
+El equipo de {{ site_name }}
+
+---
+Este es un mensaje automático, por favor no respondas a este email.
+{% endblocktrans %}
+{% endautoescape %}

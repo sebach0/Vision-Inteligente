@@ -1,0 +1,27 @@
+{% load account %}
+{% user_display user as user_display %}
+{% load i18n %}
+{% autoescape off %}
+{% blocktrans with site_name=current_site.name site_domain=current_site.domain %}
+
+¡Bienvenido a {{ site_name }}!
+
+Para verificar tu cuenta, por favor haz clic en el siguiente enlace:
+
+{{ activate_url }}
+
+Si el enlace no funciona, copia y pega la siguiente URL en tu navegador:
+{{ activate_url }}
+
+Una vez verificado tu email, podrás acceder a todos los servicios de {{ site_name }}.
+
+Si no creaste esta cuenta, puedes ignorar este mensaje.
+
+¡Gracias por unirte a nosotros!
+
+El equipo de {{ site_name }}
+
+---
+Este es un mensaje automático, por favor no respondas a este email.
+{% endblocktrans %}
+{% endautoescape %}

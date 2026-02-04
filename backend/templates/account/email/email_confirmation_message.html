@@ -1,0 +1,167 @@
+{% load account %} {% user_display user as user_display %} {% load i18n %} {%
+autoescape off %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Verificación de Email - MoviFleet</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f8fafc;
+      }
+      .container {
+        background: white;
+        border-radius: 12px;
+        padding: 40px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+      .logo {
+        font-size: 24px;
+        font-weight: bold;
+        color: #2563eb;
+        margin-bottom: 10px;
+      }
+      .title {
+        font-size: 28px;
+        font-weight: bold;
+        color: #1f2937;
+        margin-bottom: 10px;
+      }
+      .subtitle {
+        font-size: 16px;
+        color: #6b7280;
+      }
+      .content {
+        margin-bottom: 30px;
+      }
+      .button {
+        display: inline-block;
+        background-color: #2563eb;
+        color: white;
+        padding: 14px 28px;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        text-align: center;
+        margin: 20px 0;
+      }
+      .button:hover {
+        background-color: #1d4ed8;
+      }
+      .url-fallback {
+        background-color: #f3f4f6;
+        padding: 15px;
+        border-radius: 6px;
+        font-family: monospace;
+        font-size: 14px;
+        word-break: break-all;
+        margin: 20px 0;
+      }
+      .footer {
+        border-top: 1px solid #e5e7eb;
+        padding-top: 20px;
+        margin-top: 30px;
+        font-size: 14px;
+        color: #6b7280;
+        text-align: center;
+      }
+      .warning {
+        background-color: #fef3c7;
+        border: 1px solid #f59e0b;
+        border-radius: 6px;
+        padding: 15px;
+        margin: 20px 0;
+        color: #92400e;
+      }
+      .dev-info {
+        background-color: #e0f2fe;
+        border: 1px solid #0288d1;
+        border-radius: 6px;
+        padding: 15px;
+        margin: 20px 0;
+        color: #01579b;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <div class="logo">MoviFleet</div>
+        <h1 class="title">¡Bienvenido a MoviFleet!</h1>
+        <p class="subtitle">Verifica tu cuenta para comenzar</p>
+      </div>
+
+      <div class="content">
+        <p>Hola <strong>{{ user_display }}</strong>,</p>
+
+        <p>
+          ¡Gracias por registrarte en MoviFleet! Para completar tu registro y
+          acceder a todos nuestros servicios, necesitas verificar tu dirección
+          de email.
+        </p>
+
+        <div style="text-align: center">
+          <a href="{{ activate_url }}" class="button"> Verificar mi Email </a>
+        </div>
+
+        <p>
+          Si el botón no funciona, copia y pega la siguiente URL en tu
+          navegador:
+        </p>
+        <div class="url-fallback">{{ activate_url }}</div>
+
+        <div class="dev-info">
+          <strong>🔧 Información para Desarrolladores:</strong><br />
+          Este email fue enviado a través de MailHog (modo desarrollo).<br />
+          Para ver todos los emails enviados, visita:
+          <a href="http://localhost:8025" target="_blank"
+            >http://localhost:8025</a
+          >
+        </div>
+
+        <div class="warning">
+          <strong>Importante:</strong> Este enlace expirará en 24 horas por
+          seguridad. Si no verificas tu email en este tiempo, deberás solicitar
+          un nuevo enlace de verificación.
+        </div>
+
+        <p>Una vez verificado tu email, podrás:</p>
+        <ul>
+          <li>Acceder a tu cuenta personal</li>
+          <li>Solicitar viajes y servicios</li>
+          <li>Gestionar tu perfil y preferencias</li>
+          <li>Recibir notificaciones importantes</li>
+        </ul>
+
+        <p>
+          Si no creaste esta cuenta, puedes ignorar este mensaje de forma
+          segura.
+        </p>
+      </div>
+
+      <div class="footer">
+        <p>
+          Este es un mensaje automático de MoviFleet. Por favor no respondas a
+          este email.
+        </p>
+        <p>
+          Si tienes problemas con la verificación, contacta a nuestro equipo de
+          soporte.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
+{% endautoescape %}

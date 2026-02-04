@@ -1,0 +1,117 @@
+services:
+  db:
+    image: postgres:16
+    container_name: condominio_db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-condominio}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      TZ: "America/La_Paz"
+      PGTZ: "America/La_Paz"
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-condominio}",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: condominio_backend
+    environment:
+      DJANGO_DEBUG: "1"
+      POSTGRES_HOST: db
+      POSTGRES_DB: ${POSTGRES_DB:-condominio}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      # ========== CONFIGURACIÓN AUTOMÁTICA HABILITADA ==========
+      # Las siguientes variables son OPCIONALES - el sistema funciona sin ellas
+      # FRONTEND_URL: ${FRONTEND_URL:-http://127.0.0.1:5173}
+      # FRONTEND_URL_ALT: ${FRONTEND_URL_ALT:-http://localhost:5173}
+      # CORS_ALLOW_ALL_ORIGINS: ${CORS_ALLOW_ALL_ORIGINS:-True}
+      # DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-*}
+      GOOGLE_OAUTH2_CLIENT_ID: ${GOOGLE_OAUTH2_CLIENT_ID:-}
+      GOOGLE_OAUTH2_CLIENT_SECRET: ${GOOGLE_OAUTH2_CLIENT_SECRET:-}
+      # Configuración de IA
+      # Azure Computer Vision
+      AZURE_VISION_SUBSCRIPTION_KEY: ${AZURE_VISION_SUBSCRIPTION_KEY:-}
+      AZURE_VISION_ENDPOINT: ${AZURE_VISION_ENDPOINT:-}
+      # AWS Rekognition
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-}
+      AWS_REGION: ${AWS_REGION:-us-east-1}
+      AWS_REKOGNITION_COLLECTION_ID: ${AWS_REKOGNITION_COLLECTION_ID:-condominio-rostros}
+      # Google Vision
+      GOOGLE_APPLICATION_CREDENTIALS: /app/credentials/google-credentials.json
+      REDIS_URL: "redis://redis:6379/0"
+      EMAIL_HOST: mailhog
+      EMAIL_PORT: 1025
+      EMAIL_USE_TLS: "False"
+      EMAIL_USE_SSL: "False"
+      DEFAULT_FROM_EMAIL: "noreply@condominio.local"
+      SITE_ID: "1"
+      ACCOUNT_EMAIL_VERIFICATION: "mandatory"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+      - ./backend/credentials:/app/credentials
+    command: bash -lc "python manage.py migrate --noinput || true && python manage.py seed user rol --force && python manage.py collectstatic --noinput || true && python manage.py runserver 0.0.0.0:8000"
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: condominio_frontend
+    working_dir: /app
+    environment:
+      VITE_API_URL: ${VITE_API_URL:-}
+      VITE_GOOGLE_CLIENT_ID: ${VITE_GOOGLE_CLIENT_ID:-}
+      # Vite necesita HOST para exponer en 0.0.0.0
+    volumes:
+      - ./frontend:/app
+      # Montamos node_modules como un volumen anónimo para evitar problemas de permisos
+      - /app/node_modules
+    command: sh -lc "npm install && npm run dev -- --host"
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+  redis:
+    image: redis:7-alpine
+    container_name: condominio_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: condominio_mailhog
+    ports:
+      - "1025:1025" # Puerto SMTP para que Django envíe correos
+      - "8025:8025" # Interfaz web para ver los correos
+
+volumes:
+  pgdata:
+  redis_data:

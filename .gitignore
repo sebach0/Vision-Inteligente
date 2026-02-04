@@ -1,0 +1,95 @@
+# === SO / Editores ===
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+desktop.ini
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.iml
+
+# === Entornos / Secrets ===
+# Ignora todos los .env, pero permite .env.example
+**/.env
+**/.env.local
+**/.env.*.local
+!.env.example
+!backend/.env.example
+!frontend/.env.example
+!mobile/.env.example
+
+# === Python / Django ===
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.pytype/
+pip-wheel-metadata/
+pip-log.txt
+# virtualenvs
+.venv/
+venv/
+# Django build/output
+backend/staticfiles/
+backend/media/
+
+# === Node / Vite ===
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.eslintcache
+dist/
+dist-ssr/
+*.local
+
+# === Flutter / Android / iOS ===
+mobile/.dart_tool/
+mobile/.flutter-plugins
+mobile/.flutter-plugins-dependencies
+mobile/.packages
+mobile/.pub-cache/
+mobile/build/
+# Android
+mobile/android/.gradle/
+mobile/android/local.properties
+mobile/android/build/
+mobile/android/app/**/build/
+# iOS
+mobile/ios/Pods/
+mobile/ios/.symlinks/
+mobile/ios/Flutter/Flutter.framework
+mobile/ios/Flutter/Flutter.podspec
+mobile/ios/Flutter/Generated.xcconfig
+mobile/ios/Runner/GeneratedPluginRegistrant.*
+
+# === Logs / tmp ===
+logs/
+*.log
+tmp/
+temp/
+*.pid
+*.seed
+*.swp
+*.swo
+*~
+
+
+# Credenciales y archivos sensibles
+.env
+backend/credentials/google-credentials.json
+CREDENCIALES_PARA_PRODUCCION.md
+
+# Archivos temporales de configuración
+configurar_*.py
+fix_*.py
+setup_*.py
+activar_*.py
+test_*.py
