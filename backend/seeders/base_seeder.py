@@ -22,6 +22,9 @@ class BaseSeeder:
         'ResidenteSeeder',
         'AreaComunSeeder',
         'InventarioSeeder',
+        'PuertaSeeder',
+        'TipoVehiculoSeeder',
+        'ColorSeeder',
     ]
     
     # Mapa de dependencias entre seeders

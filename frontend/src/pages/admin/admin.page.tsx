@@ -8,6 +8,9 @@ import {
   MapPin,
   UserCog,
   Shield,
+  Car,
+  LogIn,
+  History,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { se } from "date-fns/locale";
@@ -158,6 +161,32 @@ const sidebarModules: SidebarModule[] = [
         label: "Reconocimiento de Placas",
         route: "/admin/seguridad",
         icon: Truck,
+      },
+    ],
+  },
+  {
+    id: "acceso-vehicular",
+    name: "Acceso Vehicular",
+    icon: Car,
+    route: "/admin/acceso-vehicular",
+    options: [
+      {
+        id: "dashboard-acceso",
+        label: "Dashboard",
+        route: "/admin/acceso-vehicular",
+        icon: BarChart3,
+      },
+      {
+        id: "registro-acceso",
+        label: "Registrar Acceso",
+        route: "/admin/acceso-vehicular/registro",
+        icon: LogIn,
+      },
+      {
+        id: "historial-acceso",
+        label: "Historial",
+        route: "/admin/acceso-vehicular/historial",
+        icon: History,
       },
     ],
   },

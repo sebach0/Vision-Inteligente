@@ -67,6 +67,14 @@ PERMISOS_SISTEMA = [
     ("seguridad.procesar_reconocimiento_placa", "Procesar reconocimiento de placas"),
     ("seguridad.ver_estadisticas", "Ver estadísticas de seguridad"),
     ("seguridad.gestionar_configuracion", "Gestionar configuración de seguridad"),
+    # Permisos para acceso vehicular
+    ("acceso.registrar_entrada", "Registrar entrada de vehículos"),
+    ("acceso.registrar_salida", "Registrar salida de vehículos"),
+    ("acceso.ver_dashboard", "Ver dashboard de acceso vehicular"),
+    ("acceso.procesar_imagen", "Procesar imágenes con IA"),
+    ("acceso.ver_historial", "Ver historial de accesos"),
+    ("acceso.gestionar_puertas", "Gestionar puertas de acceso"),
+    ("acceso.gestionar_catalogos", "Gestionar catálogos (tipos, colores)"),
 ]
 
 # Agrupar permisos por categoría para facilitar la asignación
@@ -100,6 +108,13 @@ GRUPOS_PERMISOS = {
         "seguridad.procesar_reconocimiento_placa",
         "seguridad.ver_estadisticas",
         "seguridad.gestionar_configuracion",
+        "acceso.registrar_entrada",
+        "acceso.registrar_salida",
+        "acceso.ver_dashboard",
+        "acceso.procesar_imagen",
+        "acceso.ver_historial",
+        "acceso.gestionar_puertas",
+        "acceso.gestionar_catalogos",
     ],
     "supervisor": [
         "ver_residentes",
@@ -153,5 +168,14 @@ GRUPOS_PERMISOS = {
         "seguridad.ver_alertas",
         "seguridad.procesar_reconocimiento_facial",
         "seguridad.procesar_reconocimiento_placa",
+    ],
+    "guardia": [
+        "acceso.registrar_entrada",
+        "acceso.registrar_salida",
+        "acceso.ver_dashboard",
+        "acceso.procesar_imagen",
+        "acceso.ver_historial",
+        "ver_perfil",
+        "editar_perfil",
     ],
 }

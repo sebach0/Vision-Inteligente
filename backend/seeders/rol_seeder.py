@@ -50,6 +50,12 @@ class RolSeeder(BaseSeeder):
                     "es_administrativo": True,
                     "permisos": GRUPOS_PERMISOS["operador"],
                 },
+                {
+                    "nombre": "Guardia",
+                    "descripcion": "Personal de seguridad encargado del control de acceso vehicular",
+                    "es_administrativo": True,
+                    "permisos": GRUPOS_PERMISOS["guardia"],
+                },
             ]
 
             for role_data in roles_data:
@@ -86,6 +92,7 @@ class RolSeeder(BaseSeeder):
                 "Supervisor",
                 "Residente",
                 "Operador",
+                "Guardia",
             ]
             roles_existentes = set(Rol.objects.values_list("nombre", flat=True))
             return not all(rol in roles_existentes for rol in roles_esperados)

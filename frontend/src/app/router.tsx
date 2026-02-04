@@ -11,6 +11,10 @@ import PermisosCRUD from "../pages/admin/usuarios/roles-permisos/permiso";
 import RolForm from "../pages/admin/usuarios/roles-permisos/rol";
 import UsuariosPage from "../pages/admin/usuarios/users.page";
 import AccountSettingsPage from "./auth/account-settings.page";
+// Acceso Vehicular
+import RegistroAccesoPage from "../pages/admin/acceso-vehicular/registro.page";
+import HistorialAccesosPage from "../pages/admin/acceso-vehicular/historial.page";
+import DashboardAccesoPage from "../pages/admin/acceso-vehicular/dashboard.page";
 
 export default function AppRouter() {
   return (
@@ -64,6 +68,32 @@ export default function AppRouter() {
           element={
             <ProtectedRoute requireAdmin={true}>
               <AccountSettingsPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Acceso Vehicular */}
+        <Route
+          path="/admin/acceso-vehicular"
+          element={
+            <ProtectedRoute requireAdmin={true}>
+              <DashboardAccesoPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/acceso-vehicular/registro"
+          element={
+            <ProtectedRoute requireAdmin={true}>
+              <RegistroAccesoPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/acceso-vehicular/historial"
+          element={
+            <ProtectedRoute requireAdmin={true}>
+              <HistorialAccesosPage />
             </ProtectedRoute>
           }
         />

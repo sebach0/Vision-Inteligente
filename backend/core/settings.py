@@ -134,6 +134,8 @@ INSTALLED_APPS = [
     # dj-rest-auth (REST endpoints de login/registro/password/social)
     "dj_rest_auth",
     "dj_rest_auth.registration",
+    # Acceso vehicular
+    "acceso_vehicular",
 ]
 
 AUTH_USER_MODEL = "users.CustomUser"
