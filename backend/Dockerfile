@@ -9,11 +9,15 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 # Configurar zona horaria
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-# Dependencias para psycopg2
+# Dependencias del sistema para OpenCV, Tesseract OCR y psycopg2
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential libpq-dev bash tzdata \
+    # OpenCV dependencies
     libglib2.0-0 libsm6 libxext6 libxrender-dev libgomp1 \
-    libglib2.0-0 libgtk-3-0 libavcodec-dev libavformat-dev libswscale-dev \
+    libgtk-3-0 libavcodec-dev libavformat-dev libswscale-dev \
+    libgl1 libglu1-mesa ffmpeg \
+    # Tesseract OCR
+    tesseract-ocr tesseract-ocr-spa libleptonica-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Requisitos primero (mejor cache)

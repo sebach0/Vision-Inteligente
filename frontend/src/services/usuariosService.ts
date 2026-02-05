@@ -273,7 +273,7 @@ export const usuariosApi = {
     telefono: string;
     unidad_habitacional: string;
   }>>> {
-    const response = await apiRequest('/api/residentes/disponibles_para_usuario/');
+    const response = await apiRequest('/api/admin/users/residentes_disponibles/');
     return response as ApiResponse<Array<{
       id: number;
       nombre: string;

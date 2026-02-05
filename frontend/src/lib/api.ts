@@ -51,7 +51,7 @@ export const api = axios.create({
     "Content-Type": "application/json",
     Accept: "application/json",
   },
-  timeout: 10000, // 10 segundos timeout
+  timeout: 30000, // 30 segundos timeout para procesamiento de imágenes
 });
 
 // Interceptor para requests - agregar headers necesarios

@@ -7,6 +7,12 @@ import {
   ShieldCheck,
   ChevronDown,
   ChevronUp,
+  Car,
+  LogIn,
+  History,
+  Home,
+  ScanEye,
+  Video,
 } from "lucide-react";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -71,9 +77,9 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
 
   const sidebarModules: ModuleItem[] = [
     {
-      id: "dashboard",
-      name: "Dashboard",
-      icon: BarChart3,
+      id: "home",
+      name: "Panel Principal",
+      icon: Home,
       route: "/admin/home",
     },
     {
@@ -96,6 +102,31 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
         },
       ],
     },
+    {
+      id: "acceso-vehicular",
+      name: "Acceso Vehicular",
+      icon: Car,
+      submodules: [
+        {
+          id: "registro-acceso",
+          name: "Registrar Acceso",
+          icon: LogIn,
+          route: "/admin/acceso-vehicular/registro",
+        },
+        {
+          id: "captura-vivo",
+          name: "Captura en Vivo",
+          icon: Video,
+          route: "/admin/acceso-vehicular/captura-vivo",
+        },
+        {
+          id: "historial-acceso",
+          name: "Historial",
+          icon: History,
+          route: "/admin/acceso-vehicular/historial",
+        },
+      ],
+    },
   ];
 
   return (
@@ -111,23 +142,32 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
       >
         <div
           className={`flex items-center gap-2 mb-6 ${
-            collapsed ? "justify-center" : ""
+            collapsed ? "justify-center" : "justify-between"
           }`}
         >
           {!collapsed && (
-            <Link
-              to="/admin/home"
-              className="flex items-center gap-2 hover:opacity-80 transition-opacity"
-            >
-              <CondominiumIcon className="w-8 h-8" />
-              <span className="text-lg font-bold text-blue-700">
-                Smart Condominium
-              </span>
-            </Link>
+            <>
+              <Link
+                to="/admin/home"
+                className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+              >
+                <ScanEye className="w-8 h-8" />
+                <span className="text-lg font-bold text-blue-700">
+                  Vision Inteligente
+                </span>
+              </Link>
+              <button
+                className="w-8 h-8 bg-white border border-gray-300 rounded-lg flex items-center justify-center shadow transition-all duration-300 hover:bg-gray-50"
+                onClick={() => setCollapsed(true)}
+                aria-label="Contraer sidebar"
+              >
+                <ChevronLeft className="w-5 h-5 text-blue-700" />
+              </button>
+            </>
           )}
           {collapsed && (
             <button
-              className="w-8 h-8 bg-white border border-gray-300 rounded-lg flex items-center justify-center shadow transition-all duration-300"
+              className="w-8 h-8 bg-white border border-gray-300 rounded-lg flex items-center justify-center shadow transition-all duration-300 hover:bg-gray-50"
               onClick={() => setCollapsed(false)}
               aria-label="Expandir sidebar"
             >
@@ -245,17 +285,6 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
             </div>
           ))}
         </nav>
-
-        {/* Botón de contraer */}
-        {!collapsed && (
-          <button
-            onClick={() => setCollapsed(true)}
-            className="w-full mt-4 px-4 py-2 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700 flex items-center justify-center gap-2 transition-colors"
-          >
-            <ChevronLeft className="w-4 h-4" />
-            Contraer
-          </button>
-        )}
       </div>
     </aside>
   );

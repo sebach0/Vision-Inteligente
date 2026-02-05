@@ -62,7 +62,7 @@ docker-compose logs -f frontend
 
 ```bash
 # Crear migraciones
-
+docker-compose exec backend python manage.py makemigrations
 
 # Aplicar migraciones
 docker-compose exec backend python manage.py migrate

@@ -15,6 +15,7 @@ import AccountSettingsPage from "./auth/account-settings.page";
 import RegistroAccesoPage from "../pages/admin/acceso-vehicular/registro.page";
 import HistorialAccesosPage from "../pages/admin/acceso-vehicular/historial.page";
 import DashboardAccesoPage from "../pages/admin/acceso-vehicular/dashboard.page";
+import CapturaVivoPage from "../pages/admin/acceso-vehicular/captura-vivo.page";
 
 export default function AppRouter() {
   return (
@@ -86,6 +87,14 @@ export default function AppRouter() {
           element={
             <ProtectedRoute requireAdmin={true}>
               <RegistroAccesoPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/acceso-vehicular/captura-vivo"
+          element={
+            <ProtectedRoute requireAdmin={true}>
+              <CapturaVivoPage />
             </ProtectedRoute>
           }
         />

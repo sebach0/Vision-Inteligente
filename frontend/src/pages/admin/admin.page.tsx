@@ -40,54 +40,8 @@ const sidebarModules: SidebarModule[] = [
       {
         id: "ver-dashboard",
         label: "Ver dashboard",
-        route: "/admin/dashboard",
+        route: "/admin/acceso-vehicular",
         icon: BarChart3,
-      },
-    ],
-  },
-  {
-    id: "Administracion interna",
-    name: "Administracion interna",
-    icon: UserCog,
-    route: "/admin/residentes ",
-    options: [
-      {
-        id: "residentes",
-        label: "Residentes",
-        route: "/admin/residentes",
-        icon: Users,
-      },
-      {
-        id: "personal",
-        label: "Personal",
-        route: "/admin/personal",
-        icon: Users,
-      },
-    ],
-  },
-  {
-    id: "mantenimiento",
-    name: "Mantenimiento",
-    icon: Settings,
-    route: "/admin/mantenimiento",
-    options: [
-      {
-        id: "panel",
-        label: "Panel",
-        route: "/admin/mantenimiento",
-        icon: Settings,
-      },
-      {
-        id: "tareas",
-        label: "Tareas",
-        route: "/admin/mantenimiento/tareas",
-        icon: Settings,
-      },
-      {
-        id: "talleres",
-        label: "Talleres",
-        route: "/admin/mantenimiento/talleres",
-        icon: MapPin,
       },
     ],
   },
@@ -113,69 +67,11 @@ const sidebarModules: SidebarModule[] = [
     ],
   },
   {
-    id: "bitacora",
-    name: "Bitácora",
-    icon: BarChart3,
-    route: "/admin/bitacora",
-    options: [
-      {
-        id: "ver",
-        label: "Ver bitácora",
-        route: "/admin/bitacora",
-        icon: BarChart3,
-      },
-    ],
-  },
-  {
-    id: "seguridad",
-    name: "Seguridad",
-    icon: Shield,
-    route: "/admin/seguridad",
-    options: [
-      {
-        id: "dashboard",
-        label: "Dashboard",
-        route: "/admin/seguridad",
-        icon: BarChart3,
-      },
-      {
-        id: "personas",
-        label: "Personas Autorizadas",
-        route: "/admin/seguridad",
-        icon: Users,
-      },
-      {
-        id: "vehiculos",
-        label: "Vehículos Autorizados",
-        route: "/admin/seguridad",
-        icon: Truck,
-      },
-      {
-        id: "reconocimiento-facial",
-        label: "Reconocimiento Facial",
-        route: "/admin/seguridad",
-        icon: Settings,
-      },
-      {
-        id: "reconocimiento-placa",
-        label: "Reconocimiento de Placas",
-        route: "/admin/seguridad",
-        icon: Truck,
-      },
-    ],
-  },
-  {
     id: "acceso-vehicular",
     name: "Acceso Vehicular",
     icon: Car,
     route: "/admin/acceso-vehicular",
     options: [
-      {
-        id: "dashboard-acceso",
-        label: "Dashboard",
-        route: "/admin/acceso-vehicular",
-        icon: BarChart3,
-      },
       {
         id: "registro-acceso",
         label: "Registrar Acceso",

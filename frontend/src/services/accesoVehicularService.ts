@@ -17,15 +17,23 @@ import type {
   FiltrosRegistroAcceso,
 } from "@/types/acceso-vehicular";
 
-const BASE_URL = "/acceso-vehicular";
+const BASE_URL = "/api/acceso-vehicular";
+
+// Helper para extraer datos de respuesta paginada
+function extractResults<T>(data: T[] | { results: T[] }): T[] {
+  if (Array.isArray(data)) {
+    return data;
+  }
+  return data.results || [];
+}
 
 // ============ PUERTAS ============
 
 export const puertasApi = {
   listar: async (soloActivas = true): Promise<Puerta[]> => {
     const params = soloActivas ? { activa: "true" } : {};
-    const response = await api.get<Puerta[]>(`${BASE_URL}/puertas/`, { params });
-    return response.data;
+    const response = await api.get(`${BASE_URL}/puertas/`, { params });
+    return extractResults<Puerta>(response.data);
   },
 
   obtener: async (id: number): Promise<Puerta> => {
@@ -53,8 +61,8 @@ export const puertasApi = {
 export const tiposVehiculoApi = {
   listar: async (soloActivos = true): Promise<TipoVehiculo[]> => {
     const params = soloActivos ? { activo: "true" } : {};
-    const response = await api.get<TipoVehiculo[]>(`${BASE_URL}/tipos-vehiculo/`, { params });
-    return response.data;
+    const response = await api.get(`${BASE_URL}/tipos-vehiculo/`, { params });
+    return extractResults<TipoVehiculo>(response.data);
   },
 
   obtener: async (id: number): Promise<TipoVehiculo> => {
@@ -82,8 +90,8 @@ export const tiposVehiculoApi = {
 export const coloresApi = {
   listar: async (soloActivos = true): Promise<ColorVehiculo[]> => {
     const params = soloActivos ? { activo: "true" } : {};
-    const response = await api.get<ColorVehiculo[]>(`${BASE_URL}/colores/`, { params });
-    return response.data;
+    const response = await api.get(`${BASE_URL}/colores/`, { params });
+    return extractResults<ColorVehiculo>(response.data);
   },
 
   obtener: async (id: number): Promise<ColorVehiculo> => {
