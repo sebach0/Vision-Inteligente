@@ -320,6 +320,81 @@ class RegistroAccesoViewSet(viewsets.ModelViewSet):
             'ultimos_registros': ultimos
         })
     
+    @action(detail=False, methods=['get'], url_path='recuento-por-dia')
+    def recuento_por_dia(self, request):
+        """
+        Obtiene un recuento de registros agrupados por día.
+        
+        Query params:
+            fecha_inicio: date (opcional, default: hace 30 días)
+            fecha_fin: date (opcional, default: hoy)
+            puerta: int (opcional)
+            tipo_evento: string (opcional: entrada/salida)
+        """
+        ahora = timezone.now()
+        
+        # Parsear fechas
+        fecha_inicio_str = request.query_params.get('fecha_inicio')
+        fecha_fin_str = request.query_params.get('fecha_fin')
+        
+        if fecha_inicio_str:
+            try:
+                fecha_inicio = datetime.strptime(fecha_inicio_str, '%Y-%m-%d').date()
+            except ValueError:
+                fecha_inicio = (ahora - timedelta(days=30)).date()
+        else:
+            fecha_inicio = (ahora - timedelta(days=30)).date()
+            
+        if fecha_fin_str:
+            try:
+                fecha_fin = datetime.strptime(fecha_fin_str, '%Y-%m-%d').date()
+            except ValueError:
+                fecha_fin = ahora.date()
+        else:
+            fecha_fin = ahora.date()
+        
+        # Filtrar registros base
+        registros = RegistroAcceso.objects.filter(
+            fecha_hora__date__gte=fecha_inicio,
+            fecha_hora__date__lte=fecha_fin
+        )
+        
+        # Aplicar filtros opcionales
+        puerta_id = request.query_params.get('puerta')
+        if puerta_id:
+            registros = registros.filter(puerta_id=puerta_id)
+            
+        tipo_evento = request.query_params.get('tipo_evento')
+        if tipo_evento in ['entrada', 'salida']:
+            registros = registros.filter(tipo_evento=tipo_evento)
+        
+        # Agrupar por día
+        por_dia = registros.annotate(
+            fecha=TruncDate('fecha_hora')
+        ).values('fecha').annotate(
+            total=Count('id'),
+            entradas=Count('id', filter=Q(tipo_evento='entrada')),
+            salidas=Count('id', filter=Q(tipo_evento='salida'))
+        ).order_by('-fecha')
+        
+        # Convertir a lista
+        resultado = []
+        for item in por_dia:
+            resultado.append({
+                'fecha': item['fecha'].isoformat() if item['fecha'] else None,
+                'total': item['total'],
+                'entradas': item['entradas'],
+                'salidas': item['salidas']
+            })
+        
+        return Response({
+            'fecha_inicio': fecha_inicio.isoformat(),
+            'fecha_fin': fecha_fin.isoformat(),
+            'total_dias': len(resultado),
+            'total_registros': sum(r['total'] for r in resultado),
+            'dias': resultado
+        })
+    
     @action(detail=False, methods=['get'], url_path='health-check')
     def health_check(self, request):
         """

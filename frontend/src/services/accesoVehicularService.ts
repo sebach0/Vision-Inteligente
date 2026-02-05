@@ -15,6 +15,7 @@ import type {
   BusquedaPlacaResult,
   HealthCheckResponse,
   FiltrosRegistroAcceso,
+  RecuentoPorDiaResponse,
 } from "@/types/acceso-vehicular";
 
 const BASE_URL = "/api/acceso-vehicular";
@@ -199,6 +200,26 @@ export const registrosAccesoApi = {
   // Resumen del día
   resumenDia: async (): Promise<ResumenDia> => {
     const response = await api.get<ResumenDia>(`${BASE_URL}/registros/resumen-dia/`);
+    return response.data;
+  },
+
+  // Recuento por día (agrupado)
+  recuentoPorDia: async (
+    fechaInicio?: string,
+    fechaFin?: string,
+    puerta?: number,
+    tipoEvento?: 'entrada' | 'salida'
+  ): Promise<RecuentoPorDiaResponse> => {
+    const params: Record<string, string | number> = {};
+    if (fechaInicio) params.fecha_inicio = fechaInicio;
+    if (fechaFin) params.fecha_fin = fechaFin;
+    if (puerta) params.puerta = puerta;
+    if (tipoEvento) params.tipo_evento = tipoEvento;
+
+    const response = await api.get<RecuentoPorDiaResponse>(
+      `${BASE_URL}/registros/recuento-por-dia/`,
+      { params }
+    );
     return response.data;
   },
 

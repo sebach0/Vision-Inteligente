@@ -50,10 +50,12 @@ import {
   Eye,
   Loader2,
   RefreshCw,
+  Calendar,
+  List,
 } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { useCatalogosAcceso, useHistorialAccesos, useBusquedaPlaca } from "@/hooks/useAccesoVehicular";
+import { useCatalogosAcceso, useHistorialAccesos, useBusquedaPlaca, useRecuentoPorDia } from "@/hooks/useAccesoVehicular";
 import type { RegistroAcceso, FiltrosRegistroAcceso } from "@/types/acceso-vehicular";
 
 export default function HistorialAccesosPage() {
@@ -75,10 +77,26 @@ export default function HistorialAccesosPage() {
     limpiar: limpiarBusqueda,
   } = useBusquedaPlaca();
 
+  const {
+    dias: recuentoDias,
+    totalRegistros: totalRecuento,
+    loading: cargandoRecuento,
+    cargar: cargarRecuento,
+  } = useRecuentoPorDia();
+
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
   const [filtrosTemp, setFiltrosTemp] = useState<FiltrosRegistroAcceso>(filtros);
   const [busquedaPlaca, setBusquedaPlaca] = useState("");
   const [registroSeleccionado, setRegistroSeleccionado] = useState<RegistroAcceso | null>(null);
+  const [vistaActual, setVistaActual] = useState<"detalle" | "resumen">("detalle");
+  
+  // Filtros para resumen por día
+  const [filtrosResumen, setFiltrosResumen] = useState({
+    fechaInicio: "",
+    fechaFin: "",
+    puerta: undefined as number | undefined,
+    tipoEvento: undefined as "entrada" | "salida" | undefined,
+  });
 
   const handleAplicarFiltros = () => {
     aplicarFiltros(filtrosTemp);
@@ -97,6 +115,22 @@ export default function HistorialAccesosPage() {
       buscar(busquedaPlaca);
     }
   };
+
+  const handleCargarResumen = () => {
+    cargarRecuento(
+      filtrosResumen.fechaInicio || undefined,
+      filtrosResumen.fechaFin || undefined,
+      filtrosResumen.puerta,
+      filtrosResumen.tipoEvento
+    );
+  };
+
+  // Cargar resumen cuando se cambia a esa vista
+  React.useEffect(() => {
+    if (vistaActual === "resumen") {
+      handleCargarResumen();
+    }
+  }, [vistaActual]);
 
   const registrosAMostrar = resultadosBusqueda.length > 0 ? resultadosBusqueda : registros;
 
@@ -147,8 +181,28 @@ export default function HistorialAccesosPage() {
                 )}
               </form>
 
-              {/* Botón de filtros */}
+              {/* Botón de filtros y vista */}
               <div className="flex gap-2">
+                <div className="flex border rounded-md">
+                  <Button
+                    variant={vistaActual === "detalle" ? "default" : "ghost"}
+                    size="sm"
+                    onClick={() => setVistaActual("detalle")}
+                    className="rounded-r-none"
+                  >
+                    <List className="h-4 w-4 mr-1" />
+                    Detalle
+                  </Button>
+                  <Button
+                    variant={vistaActual === "resumen" ? "default" : "ghost"}
+                    size="sm"
+                    onClick={() => setVistaActual("resumen")}
+                    className="rounded-l-none"
+                  >
+                    <Calendar className="h-4 w-4 mr-1" />
+                    Por Día
+                  </Button>
+                </div>
                 <Button
                   variant="outline"
                   onClick={() => setMostrarFiltros(!mostrarFiltros)}
@@ -156,7 +210,7 @@ export default function HistorialAccesosPage() {
                   <Filter className="h-4 w-4 mr-2" />
                   Filtros
                 </Button>
-                <Button variant="outline" onClick={cargarRegistros}>
+                <Button variant="outline" onClick={vistaActual === "detalle" ? cargarRegistros : handleCargarResumen}>
                   <RefreshCw className="h-4 w-4" />
                 </Button>
               </div>
@@ -169,12 +223,15 @@ export default function HistorialAccesosPage() {
                   <Label>Tipo de Evento</Label>
                   <Select
                     value={filtrosTemp.tipo_evento || ""}
-                    onValueChange={(value) =>
-                      setFiltrosTemp((prev) => ({
-                        ...prev,
-                        tipo_evento: value as "entrada" | "salida" | undefined,
-                      }))
-                    }
+                    onValueChange={(value) => {
+                      const newFiltros: FiltrosRegistroAcceso = { ...filtrosTemp };
+                      if (value === "entrada" || value === "salida") {
+                        newFiltros.tipo_evento = value;
+                      } else {
+                        delete newFiltros.tipo_evento;
+                      }
+                      setFiltrosTemp(newFiltros);
+                    }}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Todos" />
@@ -191,12 +248,15 @@ export default function HistorialAccesosPage() {
                   <Label>Puerta</Label>
                   <Select
                     value={filtrosTemp.puerta?.toString() || ""}
-                    onValueChange={(value) =>
-                      setFiltrosTemp((prev) => ({
-                        ...prev,
-                        puerta: value ? parseInt(value) : undefined,
-                      }))
-                    }
+                    onValueChange={(value) => {
+                      const newFiltros: FiltrosRegistroAcceso = { ...filtrosTemp };
+                      if (value) {
+                        newFiltros.puerta = parseInt(value);
+                      } else {
+                        delete newFiltros.puerta;
+                      }
+                      setFiltrosTemp(newFiltros);
+                    }}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Todas" />
@@ -217,12 +277,15 @@ export default function HistorialAccesosPage() {
                   <Input
                     type="date"
                     value={filtrosTemp.fecha_inicio?.split("T")[0] || ""}
-                    onChange={(e) =>
-                      setFiltrosTemp((prev) => ({
-                        ...prev,
-                        fecha_inicio: e.target.value ? `${e.target.value}T00:00:00` : undefined,
-                      }))
-                    }
+                    onChange={(e) => {
+                      const newFiltros: FiltrosRegistroAcceso = { ...filtrosTemp };
+                      if (e.target.value) {
+                        newFiltros.fecha_inicio = `${e.target.value}T00:00:00`;
+                      } else {
+                        delete newFiltros.fecha_inicio;
+                      }
+                      setFiltrosTemp(newFiltros);
+                    }}
                   />
                 </div>
 
@@ -231,12 +294,15 @@ export default function HistorialAccesosPage() {
                   <Input
                     type="date"
                     value={filtrosTemp.fecha_fin?.split("T")[0] || ""}
-                    onChange={(e) =>
-                      setFiltrosTemp((prev) => ({
-                        ...prev,
-                        fecha_fin: e.target.value ? `${e.target.value}T23:59:59` : undefined,
-                      }))
-                    }
+                    onChange={(e) => {
+                      const newFiltros: FiltrosRegistroAcceso = { ...filtrosTemp };
+                      if (e.target.value) {
+                        newFiltros.fecha_fin = `${e.target.value}T23:59:59`;
+                      } else {
+                        delete newFiltros.fecha_fin;
+                      }
+                      setFiltrosTemp(newFiltros);
+                    }}
                   />
                 </div>
 
@@ -251,7 +317,142 @@ export default function HistorialAccesosPage() {
           </CardContent>
         </Card>
 
-        {/* Tabla de registros */}
+        {/* Vista de Resumen por Día */}
+        {vistaActual === "resumen" && (
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Calendar className="h-5 w-5" />
+                Recuento por Día
+              </CardTitle>
+              <CardDescription>
+                {cargandoRecuento ? "Cargando..." : `${recuentoDias.length} días con ${totalRecuento} registros`}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {/* Filtros para resumen */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4 pb-4 border-b">
+                <div className="space-y-2">
+                  <Label>Fecha Inicio</Label>
+                  <Input
+                    type="date"
+                    value={filtrosResumen.fechaInicio}
+                    onChange={(e) => setFiltrosResumen(prev => ({ ...prev, fechaInicio: e.target.value }))}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Fecha Fin</Label>
+                  <Input
+                    type="date"
+                    value={filtrosResumen.fechaFin}
+                    onChange={(e) => setFiltrosResumen(prev => ({ ...prev, fechaFin: e.target.value }))}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Puerta</Label>
+                  <Select
+                    value={filtrosResumen.puerta?.toString() || ""}
+                    onValueChange={(value) => setFiltrosResumen(prev => ({ 
+                      ...prev, 
+                      puerta: value ? parseInt(value) : undefined 
+                    }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Todas" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">Todas</SelectItem>
+                      {puertas.map((p) => (
+                        <SelectItem key={p.id} value={p.id.toString()}>
+                          {p.nombre}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Tipo Evento</Label>
+                  <Select
+                    value={filtrosResumen.tipoEvento || ""}
+                    onValueChange={(value) => setFiltrosResumen(prev => ({ 
+                      ...prev, 
+                      tipoEvento: value === "entrada" || value === "salida" ? value : undefined 
+                    }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Todos" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">Todos</SelectItem>
+                      <SelectItem value="entrada">Entradas</SelectItem>
+                      <SelectItem value="salida">Salidas</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="md:col-span-4 flex justify-end">
+                  <Button onClick={handleCargarResumen}>
+                    <Search className="h-4 w-4 mr-2" />
+                    Buscar
+                  </Button>
+                </div>
+              </div>
+
+              {cargandoRecuento ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Fecha</TableHead>
+                      <TableHead className="text-center">Total</TableHead>
+                      <TableHead className="text-center">Entradas</TableHead>
+                      <TableHead className="text-center">Salidas</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {recuentoDias.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={4} className="text-center py-8">
+                          No hay datos para el rango seleccionado
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      recuentoDias.map((dia) => (
+                        <TableRow key={dia.fecha}>
+                          <TableCell className="font-medium">
+                            {format(new Date(dia.fecha + "T12:00:00"), "EEEE, dd 'de' MMMM 'de' yyyy", { locale: es })}
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <Badge variant="outline" className="font-bold">
+                              {dia.total}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <Badge variant="default" className="bg-green-600">
+                              <LogIn className="h-3 w-3 mr-1" />
+                              {dia.entradas}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <Badge variant="secondary">
+                              <LogOut className="h-3 w-3 mr-1" />
+                              {dia.salidas}
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Tabla de registros detallados */}
+        {vistaActual === "detalle" && (
         <Card>
           <CardHeader>
             <CardTitle>
@@ -395,11 +596,18 @@ export default function HistorialAccesosPage() {
                                   )}
                                   {registro.imagen_url && (
                                     <div className="col-span-2">
-                                      <Label className="text-muted-foreground">Imagen</Label>
+                                      <Label className="text-muted-foreground">Imagen Capturada</Label>
                                       <img
                                         src={registro.imagen_url}
-                                        alt="Vehículo"
-                                        className="mt-2 rounded-lg max-h-48 object-cover"
+                                        alt="Vehículo capturado"
+                                        className="mt-2 rounded-lg max-h-64 w-auto object-contain border"
+                                        onError={(e) => {
+                                          const target = e.target as HTMLImageElement;
+                                          target.style.display = 'none';
+                                          target.insertAdjacentHTML('afterend', 
+                                            '<p class="text-muted-foreground text-sm mt-2">No se pudo cargar la imagen</p>'
+                                          );
+                                        }}
                                       />
                                     </div>
                                   )}
@@ -466,6 +674,7 @@ export default function HistorialAccesosPage() {
             )}
           </CardContent>
         </Card>
+        )}
       </div>
     </AdminLayout>
   );

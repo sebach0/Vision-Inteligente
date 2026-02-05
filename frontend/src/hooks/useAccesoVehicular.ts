@@ -19,6 +19,8 @@ import type {
   EstadisticasAcceso,
   ResumenDia,
   FiltrosRegistroAcceso,
+  RecuentoPorDiaResponse,
+  RecuentoDia,
 } from "@/types/acceso-vehicular";
 import { useToast } from "@/hooks/use-toast";
 
@@ -305,5 +307,47 @@ export function useBusquedaPlaca() {
     totalEncontrados,
     buscar,
     limpiar,
+  };
+}
+
+// ============ HOOK PARA RECUENTO POR DÍA ============
+
+export function useRecuentoPorDia() {
+  const [datos, setDatos] = useState<RecuentoPorDiaResponse | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const cargar = useCallback(async (
+    fechaInicio?: string,
+    fechaFin?: string,
+    puerta?: number,
+    tipoEvento?: 'entrada' | 'salida'
+  ) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await registrosAccesoApi.recuentoPorDia(
+        fechaInicio,
+        fechaFin,
+        puerta,
+        tipoEvento
+      );
+      setDatos(response);
+    } catch (err) {
+      setError("Error al cargar el recuento por día");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  return {
+    datos,
+    dias: datos?.dias || [],
+    totalRegistros: datos?.total_registros || 0,
+    totalDias: datos?.total_dias || 0,
+    loading,
+    error,
+    cargar,
   };
 }

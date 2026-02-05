@@ -155,3 +155,19 @@ export interface FiltrosRegistroAcceso {
   placa?: string;
   ordering?: string;
 }
+
+// Recuento por día
+export interface RecuentoDia {
+  fecha: string;
+  total: number;
+  entradas: number;
+  salidas: number;
+}
+
+export interface RecuentoPorDiaResponse {
+  fecha_inicio: string;
+  fecha_fin: string;
+  total_dias: number;
+  total_registros: number;
+  dias: RecuentoDia[];
+}
