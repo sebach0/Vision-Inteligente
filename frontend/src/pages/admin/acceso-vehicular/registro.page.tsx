@@ -424,7 +424,7 @@ export default function RegistroAccesoPage() {
                   <Input
                     id="placa"
                     {...register("placa", { required: "La placa es requerida" })}
-                    placeholder="Ej: ABC-1234"
+                    placeholder="Ej: 1234-ABC"
                     className="uppercase"
                   />
                   {errors.placa && (

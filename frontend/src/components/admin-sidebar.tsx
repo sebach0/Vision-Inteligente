@@ -13,6 +13,8 @@ import {
   Home,
   ScanEye,
   Video,
+  Truck,
+  ListChecks,
 } from "lucide-react";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -126,6 +128,12 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
           route: "/admin/acceso-vehicular/historial",
         },
       ],
+    },
+    {
+      id: "autos-registrados",
+      name: "Autos Registrados",
+      icon: Truck,
+      route: "/admin/autos-registrados",
     },
   ];
 

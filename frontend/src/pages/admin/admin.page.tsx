@@ -11,6 +11,7 @@ import {
   Car,
   LogIn,
   History,
+  FileText,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { se } from "date-fns/locale";
@@ -83,6 +84,20 @@ const sidebarModules: SidebarModule[] = [
         label: "Historial",
         route: "/admin/acceso-vehicular/historial",
         icon: History,
+      },
+    ],
+  },
+  {
+    id: "autos-registrados",
+    name: "Autos Registrados",
+    icon: Truck,
+    route: "/admin/autos-registrados",
+    options: [
+      {
+        id: "ver-autos",
+        label: "Ver Autos",
+        route: "/admin/autos-registrados",
+        icon: FileText,
       },
     ],
   },

@@ -14,7 +14,7 @@ from django.utils import timezone
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from django_filters import rest_framework as filters
 
 from .models import Puerta, TipoVehiculo, Color, RegistroAcceso, ResultadoOCR
@@ -51,6 +51,12 @@ class TipoVehiculoViewSet(viewsets.ModelViewSet):
     serializer_class = TipoVehiculoSerializer
     permission_classes = [IsAuthenticated]
     
+    def get_permissions(self):
+        """Permitir acceso público para listar tipos de vehículo."""
+        if self.action == 'list' or self.action == 'retrieve':
+            return [AllowAny()]
+        return super().get_permissions()
+    
     def get_queryset(self):
         queryset = super().get_queryset()
         activo = self.request.query_params.get('activo')
@@ -66,6 +72,12 @@ class ColorViewSet(viewsets.ModelViewSet):
     queryset = Color.objects.all()
     serializer_class = ColorSerializer
     permission_classes = [IsAuthenticated]
+    
+    def get_permissions(self):
+        """Permitir acceso público para listar colores."""
+        if self.action == 'list' or self.action == 'retrieve':
+            return [AllowAny()]
+        return super().get_permissions()
     
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -105,6 +117,12 @@ class RegistroAccesoViewSet(viewsets.ModelViewSet):
     ).prefetch_related('resultado_ocr')
     permission_classes = [IsAuthenticated]
     filterset_class = RegistroAccesoFilter
+    
+    def get_permissions(self):
+        """Permitir acceso público para crear registros (formulario público)."""
+        if self.action == 'create':
+            return [AllowAny()]
+        return super().get_permissions()
     
     def get_serializer_class(self):
         if self.action in ['create', 'update', 'partial_update']:
@@ -408,6 +426,19 @@ class RegistroAccesoViewSet(viewsets.ModelViewSet):
             'base_datos': 'ok',
             'timestamp': timezone.now().isoformat()
         })
+    
+    def create(self, request, *args, **kwargs):
+        """Override create to add better error handling."""
+        try:
+            return super().create(request, *args, **kwargs)
+        except Exception as e:
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"Error creating registro: {str(e)}", exc_info=True)
+            return Response(
+                {'detail': f'Error al crear el registro: {str(e)}'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
     
     def perform_create(self, serializer):
         """Guarda el registro y procesa la imagen si existe."""

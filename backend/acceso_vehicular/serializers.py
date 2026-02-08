@@ -54,8 +54,8 @@ class RegistroAccesoSerializer(serializers.ModelSerializer):
     puerta = PuertaSerializer(read_only=True)
     tipo_vehiculo = TipoVehiculoSerializer(read_only=True)
     color = ColorSerializer(read_only=True)
-    guardia_nombre = serializers.CharField(source='guardia.get_full_name', read_only=True)
-    guardia_username = serializers.CharField(source='guardia.username', read_only=True)
+    guardia_nombre = serializers.SerializerMethodField()
+    guardia_username = serializers.SerializerMethodField()
     resultado_ocr = ResultadoOCRSerializer(read_only=True)
     imagen_url = serializers.SerializerMethodField()
     
@@ -68,6 +68,18 @@ class RegistroAccesoSerializer(serializers.ModelSerializer):
             'created_at', 'updated_at'
         ]
         read_only_fields = fields
+    
+    def get_guardia_nombre(self, obj):
+        """Retorna el nombre del guardia o 'Registro Público' si no hay guardia."""
+        if obj.guardia:
+            return obj.guardia.get_full_name()
+        return "Registro Público"
+    
+    def get_guardia_username(self, obj):
+        """Retorna el username del guardia o None si no hay guardia."""
+        if obj.guardia:
+            return obj.guardia.username
+        return None
     
     def get_imagen_url(self, obj):
         if obj.imagen:
@@ -113,12 +125,42 @@ class RegistroAccesoCreateSerializer(serializers.ModelSerializer):
         """Normaliza la placa a mayúsculas."""
         return value.upper().strip() if value else value
     
+    def validate(self, attrs):
+        """Validación adicional para asegurar que las relaciones existen."""
+        # Validar que la puerta existe y está activa
+        puerta = attrs.get('puerta')
+        if puerta and not puerta.activa:
+            raise serializers.ValidationError({
+                'puerta_id': 'La puerta seleccionada no está activa.'
+            })
+        
+        # Validar tipo de vehículo si se proporciona
+        tipo_vehiculo = attrs.get('tipo_vehiculo')
+        if tipo_vehiculo and not tipo_vehiculo.activo:
+            raise serializers.ValidationError({
+                'tipo_vehiculo_id': 'El tipo de vehículo seleccionado no está activo.'
+            })
+        
+        # Validar color si se proporciona
+        color = attrs.get('color')
+        if color and not color.activo:
+            raise serializers.ValidationError({
+                'color_id': 'El color seleccionado no está activo.'
+            })
+        
+        return attrs
+    
     def create(self, validated_data):
         # Extraer imagen base64 si existe
         imagen_base64 = validated_data.pop('imagen_base64', None)
         
-        # Asignar el guardia desde el request
-        validated_data['guardia'] = self.context['request'].user
+        # Asignar el guardia desde el request si está autenticado
+        request = self.context.get('request')
+        if request and hasattr(request, 'user') and request.user.is_authenticated:
+            validated_data['guardia'] = request.user
+        else:
+            # Para registros públicos, guardia es None
+            validated_data['guardia'] = None
         
         # Crear el registro
         registro = RegistroAcceso.objects.create(**validated_data)

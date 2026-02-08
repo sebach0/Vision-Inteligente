@@ -6,6 +6,8 @@ import {
 } from "react-router-dom";
 import AdminPage from "../pages/admin/admin.page";
 import AdminLoginPage from "@/pages/auth/AdminLoginPage";
+import HomePage from "../pages/home.page";
+import RegistroVehiculoPage from "../pages/registro-vehiculo.page";
 import ProtectedRoute from "@/app/auth/ProtectedRoute";
 import PermisosCRUD from "../pages/admin/usuarios/roles-permisos/permiso";
 import RolForm from "../pages/admin/usuarios/roles-permisos/rol";
@@ -16,12 +18,14 @@ import RegistroAccesoPage from "../pages/admin/acceso-vehicular/registro.page";
 import HistorialAccesosPage from "../pages/admin/acceso-vehicular/historial.page";
 import DashboardAccesoPage from "../pages/admin/acceso-vehicular/dashboard.page";
 import CapturaVivoPage from "../pages/admin/acceso-vehicular/captura-vivo.page";
+import VehiculosRegistradosPage from "../pages/admin/acceso-vehicular/vehiculos-registrados.page";
 
 export default function AppRouter() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Navigate to="/admin" replace />} />
+        <Route path="/" element={<HomePage />} />
+        <Route path="/registro-vehiculo" element={<RegistroVehiculoPage />} />
         {/* Rutas protegidas de administración */}
         <Route
           path="/admin/permisos"
@@ -103,6 +107,14 @@ export default function AppRouter() {
           element={
             <ProtectedRoute requireAdmin={true}>
               <HistorialAccesosPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/autos-registrados"
+          element={
+            <ProtectedRoute requireAdmin={true}>
+              <VehiculosRegistradosPage />
             </ProtectedRoute>
           }
         />

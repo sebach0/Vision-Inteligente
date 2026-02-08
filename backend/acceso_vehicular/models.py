@@ -105,7 +105,9 @@ class RegistroAcceso(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
         related_name='registros_acceso',
-        help_text="Guardia que registró el acceso"
+        null=True,
+        blank=True,
+        help_text="Guardia que registró el acceso (opcional para registros públicos)"
     )
     
     # Datos del vehículo
